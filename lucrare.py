@@ -9,7 +9,7 @@ from ctypes import wintypes
 
 PROCESS_ALL_ACCESS = 0x1F0FFF
 
-# Import funcții API Windows
+
 OpenProcess = ctypes.windll.kernel32.OpenProcess
 ReadProcessMemory = ctypes.windll.kernel32.ReadProcessMemory
 WriteProcessMemory = ctypes.windll.kernel32.WriteProcessMemory
@@ -43,42 +43,42 @@ top_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=5)
 top_frame.columnconfigure(0, weight=0)  
 top_frame.columnconfigure(1, weight=1)  
 
-# Eticheta de căutare
+
 text = ttk.Label(top_frame, text="Search a process : ")
 text.grid(row=0, column=0, sticky="w", padx=0, pady=5)
 
-# Entry - va ocupa tot spațiul disponibil după text
+
 search_input = ttk.Entry(top_frame)
 search_input.grid(row=0, column=1, sticky="ew", padx=0, pady=5)
 
-# Eticheta din dreapta cu lățime fixă pentru a preveni redimensionarea
+
 text_right = ttk.Label(root, text="Selected process : None", width=10, anchor="w")
 text_right.grid(row=0, column=1, sticky="ew", padx=10, pady=5)
 
 addrese_int_right = ttk.Label(root, text="Au fost gasite : ", width=10, anchor="w")
 addrese_int_right.grid(row=2, column=2, sticky="nsew")
 
-# Frame pentru tabel, ca să conțină scrollbar-ul
+
 frame_table = ttk.Frame(root)
 frame_table.grid(row=1, column=0, sticky="nsew", padx=10, pady=5)
 
-# Scrollbar vertical pentru tabel
+
 scrollbar = ttk.Scrollbar(frame_table, orient="vertical")
 scrollbar.pack(side="right", fill="y")
 
-# Tabelul proceselor
+
 columns = ("PID", "Nume Proces")
 tree = ttk.Treeview(frame_table, columns=columns, show="headings", yscrollcommand=scrollbar.set)
 tree.heading("PID", text="PID")
 tree.heading("Nume Proces", text="Nume Proces")
 
-# Legare scrollbar la tabel
+
 scrollbar.config(command=tree.yview)
 
-# Plasare widget-uri în frame-ul tabelului
+
 tree.pack(side="left", fill="both", expand=True)
 
-# Scrollbar pentru tree_adress
+
 columns_adress = ("Adress", "Value")
 frame_adress = ttk.Frame(root)
 frame_adress.grid(row=1, column=1, sticky="nsew")
@@ -171,16 +171,16 @@ def scan_button():
     try:
         value_to_find = int(input_box.get())
         results = scan_memory(pid, value_to_find)
-        addrese_int_right.config(text=f"Au fost gasite : {len(results)}")
+        addrese_int_right.config(text=f"Found adresses : {len(results)}")
         if not results:
-            print("Nu s-au găsit rezultate.")
+            print("Has not found any adresses!")
     except ValueError:
         print("Valoare invalidă!")
 
 def next_scan():
     global results
     if not results:
-        print("Nu există rezultate anterioare pentru filtrare!")
+        print("Doesn`t exists any previous scan results!")
         return
     search_value = int(input_box.get())  # Noua valoare căutată
     new_scan_results = scan_memory(pid, search_value)  # Rescanăm memoria
@@ -188,13 +188,13 @@ def next_scan():
     filtered_results = [(addr, val) for addr, val in new_scan_results if addr in dict(results)]
     results = filtered_results  # Actualizăm cu rezultatele filtrate
     update_results(results)
-    addrese_int_right.config(text=f"Au fost găsite: {len(results)}")  # Actualizare UI
+    addrese_int_right.config(text=f"It has found {len(results)}")  # Actualizare UI
 
 def scrie_mem():
     handle = OpenProcess(PROCESS_ALL_ACCESS, False, pid)
     new_value = input_box.get().lower()
     if not handle:
-        print("Eroare: Nu s-a putut deschide procesul.")
+        print("Error : Couldn`t open process!")
         return False
     
     selection = tree_adress.selection()
